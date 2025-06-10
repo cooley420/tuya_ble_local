@@ -1,0 +1,26 @@
+{
+  "domain": "tuya_ble_local",
+  "name": "Tuya BLE Local",
+  "version": "0.2.0",
+  "documentation": "https://github.com/cooley420/tuya_ble_local#readme",
+  "issue_tracker": "https://github.com/cooley420/tuya_ble_local/issues",
+  "config_flow": true,
+  "is_built_in": false,
+  "stage": "alpha",
+  "homeassistant": "2024.4.0",
+  "integration_type": "device",
+  "configurable": true,
+  "iot_class": "local_push",
+  "dependencies": ["bluetooth_adapters"],
+  "after_dependencies": ["bluetooth"],
+  "requirements": ["pycountry>=22.3.5"],
+  "codeowners": ["@PlusPlus-ua", "cooley420"],
+  "bluetooth": [
+    {
+      "connectable": true,
+      "service_data_uuid": "0000a201-0000-1000-8000-00805f9b34fb"
+    }
+  ],
+  "dhcp": [],
+  "icon": "mdi:bluetooth-connect"
+}
