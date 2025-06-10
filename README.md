@@ -112,7 +112,7 @@ Click Submit to complete encrypted local pairing.
 ---
 
 
-📌 Need help retrieving your local key? See the [Local Key Guide](https://github.com/cooley420/tuya_ble_local/wiki/Getting-Your-Local-Key)
+📌 Need help retrieving your local key? See the [Local Key Guide](https://github.com/cooley420/blob/main/tuya_ble_local/wiki/Getting_Your_Local_Key.md)
 
 
 ---
