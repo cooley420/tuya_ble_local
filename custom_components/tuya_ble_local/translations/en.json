@@ -3,7 +3,7 @@
     "abort": {
       "no_unconfigured_devices": "No unconfigured devices found."
     },
-    "flow_title": "{name} (Tuya BLE)",
+    "flow_title": "{name}",
     "step": {
       "device": {
         "data": {

@@ -32,6 +32,8 @@ from .const import (
     SET_DISCONNECTED_DELAY,
 )
 
+from .product_map import get_device_product_info, TuyaBLEProductInfo
+
 _LOGGER = logging.getLogger(__name__)
 
 
@@ -45,13 +47,6 @@ class TuyaBLEFingerbotInfo:
     reverse_positions: int
     manual_control: int = 0
     program: int = 0
-
-
-@dataclass
-class TuyaBLEProductInfo:
-    name: str
-    manufacturer: str = DEVICE_DEF_MANUFACTURER
-    fingerbot: TuyaBLEFingerbotInfo | None = None
 
 
 class TuyaBLEEntity(CoordinatorEntity):
@@ -173,28 +168,51 @@ class TuyaBLECategoryInfo:
 devices_database: dict[str, TuyaBLECategoryInfo] = {
     "co2bj": TuyaBLECategoryInfo(
         products={
-            "59s19z5m": TuyaBLEProductInfo(  # device product_id
+            "59s19z5m": TuyaBLEProductInfo(
+                product_id="59s19z5m",
                 name="CO2 Detector",
+                model="Unknown",
+                category="co2bj",
+                platforms=["sensor"],
             ),
         },
+        info=TuyaBLEProductInfo(
+            product_id="co2bj-fallback",
+            name="Generic CO2 Device",
+            model="Unknown",
+            category="co2bj",
+            platforms=["sensor"],
+        ),
     ),
     "ms": TuyaBLECategoryInfo(
         products={
             **dict.fromkeys(
-                [
-                    "ludzroix",
-                    "isk2p555"
-                ],
-                    TuyaBLEProductInfo(  # device product_id
+                ["ludzroix", "isk2p555"],
+                TuyaBLEProductInfo(
+                    product_id="shared-ms",
                     name="Smart Lock",
+                    model="Unknown",
+                    category="ms",
+                    platforms=["lock"],
                 ),
             ),
         },
+        info=TuyaBLEProductInfo(
+            product_id="ms-fallback",
+            name="Generic Lock",
+            model="Unknown",
+            category="ms",
+            platforms=["lock"],
+        ),
     ),
     "szjqr": TuyaBLECategoryInfo(
         products={
-            "3yqdo5yt": TuyaBLEProductInfo(  # device product_id
+            "3yqdo5yt": TuyaBLEProductInfo(
+                product_id="3yqdo5yt",
                 name="CUBETOUCH 1s",
+                model="Unknown",
+                category="szjqr",
+                platforms=["switch"],
                 fingerbot=TuyaBLEFingerbotInfo(
                     switch=1,
                     mode=2,
@@ -204,8 +222,12 @@ devices_database: dict[str, TuyaBLECategoryInfo] = {
                     reverse_positions=4,
                 ),
             ),
-            "xhf790if": TuyaBLEProductInfo(  # device product_id
+            "xhf790if": TuyaBLEProductInfo(
+                product_id="xhf790if",
                 name="CubeTouch II",
+                model="Unknown",
+                category="szjqr",
+                platforms=["switch"],
                 fingerbot=TuyaBLEFingerbotInfo(
                     switch=1,
                     mode=2,
@@ -216,14 +238,13 @@ devices_database: dict[str, TuyaBLECategoryInfo] = {
                 ),
             ),
             **dict.fromkeys(
-                [
-                    "blliqpsj",
-                    "ndvkgsrm",
-                    "yiihr7zh", 
-                    "neq16kgd"
-                ],  # device product_ids
+                ["blliqpsj", "ndvkgsrm", "yiihr7zh", "neq16kgd"],
                 TuyaBLEProductInfo(
+                    product_id="fingerbot-plus",
                     name="Fingerbot Plus",
+                    model="Unknown",
+                    category="szjqr",
+                    platforms=["switch"],
                     fingerbot=TuyaBLEFingerbotInfo(
                         switch=2,
                         mode=8,
@@ -237,17 +258,13 @@ devices_database: dict[str, TuyaBLECategoryInfo] = {
                 ),
             ),
             **dict.fromkeys(
-                [
-                    "ltak7e1p",
-                    "y6kttvd6",
-                    "yrnk7mnn",
-                    "nvr2rocq",
-                    "bnt7wajf",
-                    "rvdceqjh",
-                    "5xhbk964",
-                ],  # device product_ids
+                ["ltak7e1p", "y6kttvd6", "yrnk7mnn", "nvr2rocq", "bnt7wajf", "rvdceqjh", "5xhbk964"],
                 TuyaBLEProductInfo(
+                    product_id="fingerbot",
                     name="Fingerbot",
+                    model="Unknown",
+                    category="szjqr",
+                    platforms=["switch"],
                     fingerbot=TuyaBLEFingerbotInfo(
                         switch=2,
                         mode=8,
@@ -260,68 +277,137 @@ devices_database: dict[str, TuyaBLECategoryInfo] = {
                 ),
             ),
         },
+        info=TuyaBLEProductInfo(
+            product_id="szjqr-fallback",
+            name="Generic Fingerbot",
+            model="Unknown",
+            category="szjqr",
+            platforms=["switch"],
+        ),
     ),
     "wk": TuyaBLECategoryInfo(
         products={
             **dict.fromkeys(
-            [
-            "drlajpqc", 
-            "nhj2j7su",
-            ],  # device product_id
-            TuyaBLEProductInfo(  
-                name="Thermostatic Radiator Valve",
+                ["drlajpqc", "nhj2j7su"],
+                TuyaBLEProductInfo(
+                    product_id="wk-trv",
+                    name="Thermostatic Radiator Valve",
+                    model="Unknown",
+                    category="wk",
+                    platforms=["climate"],
                 ),
             ),
         },
+        info=TuyaBLEProductInfo(
+            product_id="wk-fallback",
+            name="Generic Radiator Valve",
+            model="Unknown",
+            category="wk",
+            platforms=["climate"],
+        ),
     ),
     "wsdcg": TuyaBLECategoryInfo(
         products={
-            "ojzlzzsw": TuyaBLEProductInfo(  # device product_id
+            "ojzlzzsw": TuyaBLEProductInfo(
+                product_id="ojzlzzsw",
                 name="Soil moisture sensor",
+                model="Unknown",
+                category="wsdcg",
+                platforms=["sensor"],
             ),
         },
+        info=TuyaBLEProductInfo(
+            product_id="wsdcg-fallback",
+            name="Generic Soil Sensor",
+            model="Unknown",
+            category="wsdcg",
+            platforms=["sensor"],
+        ),
+    ),
+    "zwjcy": TuyaBLECategoryInfo(
+        products={
+            "gvygg3m8": TuyaBLEProductInfo(
+                product_id="gvygg3m8",
+                name="Soil Moisture Sensor (SGS01)",
+                model="SGS01",
+                category="zwjcy",
+                platforms=["sensor"],
+            ),
+        },
+        info=TuyaBLEProductInfo(
+            product_id="zwjcy-fallback",
+            name="Generic Soil Sensor",
+            model="Unknown",
+            category="zwjcy",
+            platforms=["sensor"],
+        ),
     ),
     "znhsb": TuyaBLECategoryInfo(
         products={
-            "cdlandip":  # device product_id
-            TuyaBLEProductInfo(
+            "cdlandip": TuyaBLEProductInfo(
+                product_id="cdlandip",
                 name="Smart water bottle",
+                model="Unknown",
+                category="znhsb",
+                platforms=["sensor"],
             ),
         },
+        info=TuyaBLEProductInfo(
+            product_id="znhsb-fallback",
+            name="Generic Water Bottle",
+            model="Unknown",
+            category="znhsb",
+            platforms=["sensor"],
+        ),
     ),
     "ggq": TuyaBLECategoryInfo(
         products={
-            "6pahkcau":  # device product_id
-            TuyaBLEProductInfo(
+            "6pahkcau": TuyaBLEProductInfo(
+                product_id="6pahkcau",
                 name="Irrigation computer",
+                model="Unknown",
+                category="ggq",
+                platforms=["switch"],
             ),
         },
+        info=TuyaBLEProductInfo(
+            product_id="ggq-fallback",
+            name="Generic Irrigation Computer",
+            model="Unknown",
+            category="ggq",
+            platforms=["switch"],
+        ),
     ),
 }
 
 
 def get_product_info_by_ids(
     category: str, product_id: str
-) -> TuyaBLEProductInfo | None:
+) -> TuyaBLEProductInfo:
     category_info = devices_database.get(category)
-    if category_info is not None:
+    if category_info:
         product_info = category_info.products.get(product_id)
-        if product_info is not None:
+        if product_info:
             return product_info
 
         if category_info.info:
             _LOGGER.debug(
-                "No exact product match for %s in category %s. Using fallback info.",
-                product_id,
-                category,
+                "No exact match for %s in category %s. Using fallback.", product_id, category
             )
             return category_info.info
-    return None
 
-
-
-def get_device_product_info(device: TuyaBLEDevice) -> TuyaBLEProductInfo | None:
-    return get_product_info_by_ids(device.category, device.product_id)
+    _LOGGER.warning(
+        "Unknown device: product_id=%s, category=%s. Using safe fallback.",
+        product_id, category
+    )
+    return TuyaBLEProductInfo(
+        product_id=product_id,
+        name="Unknown Device",
+        manufacturer=DEVICE_DEF_MANUFACTURER,
+        category=category or "unknown",
+        model="Unknown",
+        platforms=["sensor"],  # Default-safe
+    )
 
 
 def get_short_address(address: str) -> str:

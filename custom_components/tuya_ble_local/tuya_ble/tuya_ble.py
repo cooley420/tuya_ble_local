@@ -295,28 +295,28 @@ class TuyaBLEDevice:
         _LOGGER.debug("%s: Updating", self.address)
         await self._send_packet(TuyaBLECode.FUN_SENDER_DEVICE_STATUS, bytes())
 
-async def _update_device_info(self) -> bool:
-    if self._device_info is None:
-        if not hasattr(self, "_hass") or not getattr(self._hass, "data", None):
-            return False
+    async def _update_device_info(self) -> bool:
+        if self._device_info is None:
+            if not hasattr(self, "_hass") or not getattr(self._hass, "data", None):
+                return False
 
-        creds = self._hass.data.get(f"{DOMAIN}_credentials", {}).get(self.address)
+            creds = self._hass.data.get(f"{DOMAIN}_credentials", {}).get(self.address)
 
-        if creds:
-            self._device_info = TuyaBLEDeviceCredentials(
-                address=self.address,
-                device_id=creds["device_id"],
-                local_key=creds["local_key"],
-                category="",  # fill if known
-                product_id="",  # fill if known
-                device_name="Custom Local BLE",
-            )
+            if creds:
+                self._device_info = TuyaBLEDeviceCredentials(
+                    address=self.address,
+                    device_id=creds["device_id"],
+                    local_key=creds["local_key"],
+                    category="",  # fill if known
+                    product_id="",  # fill if known
+                    device_name="Custom Local BLE",
+                )
 
-    if self._device_info:
-        self._local_key = self._device_info.local_key.encode()
-        self._login_key = hashlib.md5(self._local_key).digest()
+        if self._device_info:
+            self._local_key = self._device_info.local_key.encode()
+            self._login_key = hashlib.md5(self._local_key).digest()
 
-    return self._device_info is not None
+        return self._device_info is not None
 
     def _decode_advertisement_data(self) -> None:
         raw_product_id: bytes | None = None
@@ -525,8 +525,8 @@ async def _update_device_info(self) -> bool:
                 self.address,
                 self.rssi,
             )
-           if not self._reconnect_task or self._reconnect_task.done():
-               self._reconnect_task = asyncio.create_task(self._reconnect())
+            if not self._reconnect_task or self._reconnect_task.done():
+                self._reconnect_task = asyncio.create_task(self._reconnect())
 
     def _disconnect(self) -> None:
         """Disconnect from device."""

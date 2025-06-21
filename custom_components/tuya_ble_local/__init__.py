@@ -2,6 +2,8 @@
 from __future__ import annotations
 
 import logging
+_LOGGER = logging.getLogger(__name__)
+_LOGGER.warning("💡 Tuya BLE Local __init__.py loaded successfully")
 
 from bleak_retry_connector import BLEAK_RETRY_EXCEPTIONS as BLEAK_EXCEPTIONS, get_device
 
@@ -29,11 +31,19 @@ PLATFORMS: list[Platform] = [
 
 _LOGGER = logging.getLogger(__name__)
 
+def colonify_mac(address: str) -> str:
+    return ":".join(address[i:i+2] for i in range(0, 12, 2)).upper()
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up Tuya BLE device from a config entry."""
-    address: str = entry.data[CONF_ADDRESS]
+    # Backward-compatible fallback for legacy entries
+    raw_address = entry.data.get(CONF_ADDRESS) or entry.data.get("address")
+    if not raw_address:
+        raise ValueError("Missing MAC address from config entry.")
+    address: str = raw_address
     normalized_address = address.lower().replace(":", "")
+    colon_mac = colonify_mac(normalized_address)
+
     device_id = entry.data.get("device_id")
     local_key = entry.data.get("local_key")
 
@@ -44,15 +54,24 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     }
 
     ble_device = bluetooth.async_ble_device_from_address(
-        hass, address.upper(), True
-    ) or await get_device(address)
+        hass, colon_mac, True
+    ) or await get_device(colon_mac)
     if not ble_device:
-        raise ConfigEntryNotReady(f"Could not find BLE device at {address}")
+        _LOGGER.warning("BLE device not found in HA cache. Attempting active scan via bleak_retry_connector.")
+        try:
+            ble_device = await get_device(address)
+        except Exception as ex:
+            raise ConfigEntryNotReady(
+                f"Could not find Tuya BLE device at {address} via fallback scan: {ex}"
+            ) from ex
 
     device = TuyaBLEDevice(None, ble_device)
-    await device.initialize()
 
     product_info = get_device_product_info(device)
+    if product_info is None:
+        _LOGGER.warning("Could not resolve product info for %s", device_id)
+        raise ConfigEntryNotReady("No product mapping found")
+
     _LOGGER.debug("Initialized %s (%s)", device_id, product_info.product_id)
 
     coordinator = TuyaBLECoordinator(hass, device)
@@ -72,7 +91,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         bluetooth.async_register_callback(
             hass,
             _async_update_ble,
-            BluetoothCallbackMatcher({ADDRESS: address}),
+            BluetoothCallbackMatcher({ADDRESS: colon_mac}),
             bluetooth.BluetoothScanningMode.ACTIVE,
         )
     )
