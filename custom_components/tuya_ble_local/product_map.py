@@ -2,6 +2,7 @@ from dataclasses import dataclass
 import logging
 from .const import DEVICE_DEF_MANUFACTURER
 from .tuya_ble import TuyaBLEDevice
+from typing import Optional
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -13,6 +14,7 @@ class TuyaBLEProductInfo:
     category: str
     platforms: list[str]
     manufacturer: str = DEVICE_DEF_MANUFACTURER
+    fingerbot: Optional[TuyaBLEFingerbotInfo] = None
 
 def log_if_fallback(product_info: TuyaBLEProductInfo, product_id: str, category: str) -> None:
     if product_info.name == "Unknown Device":
