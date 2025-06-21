@@ -5,7 +5,7 @@
   "documentation": "https://github.com/cooley420/tuya_ble_local#readme",
   "issue_tracker": "https://github.com/cooley420/tuya_ble_local/issues",
   "config_flow": true,
-  "flow_title": "{name}"
+  "flow_title": "{name}",
   "is_built_in": false,
   "stage": "alpha",
   "homeassistant": "2024.4.0",
